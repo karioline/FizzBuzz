@@ -1,0 +1,86 @@
+public List<String> arrayList = new ArrayList<String>();
+
+
+public List<String> readDnaToArrayList(File nucleotideFile) throws FileNotFoundException {
+		Scanner input = new Scanner(nucleotideFile);
+		while(input.hasNext()) {
+			String pair = input.next();
+			System.out.println("Reading in: " + pair);
+			this.arrayList.add(pair);
+		}
+		input.close();
+		return arrayList;
+	}
+	
+	public String translateToBinary(String m){
+		//transform nucleotides to binary
+		switch(m){
+			case "A": m = "00"; break;
+			case "T": m = "01"; break;
+			case "C": m = "10"; break;
+			case "G": m = "11"; break;
+			case "AA": m = "0000"; break;
+			case "AT": m =  "0001"; break;
+			case "AC":  m = "0010"; break;
+			case "AG": m = "0011"; break;
+			case "TA":  m = "0100"; break;
+			case "TT": m = "0101"; break;
+			case "TC":  m = "0110"; break;
+			case "TG": m = "0111"; break;
+			case "CA":  m = "1000"; break;
+			case "CT": m = "1001"; break;
+			case "CC":  m = "1010"; break;
+			case "CG":  m = "1011"; break;
+			case "GA": m = "1100"; break;
+			case "GT":  m = "1101"; break;
+			case "GC":  m = "1110"; break;
+			case "GG":  m = "1111"; break;
+			default:  m = ""; break; //skips anything that isn't a nucleotide(s)
+		}//end switch
+	
+	return m;
+	}
+	
+	//calls translateToBinary() for each element, then replaces in situ the nucleotide string with the binary translation string
+	public void writeTransformedDataToFile() throws IOException{
+		java.io.PrintWriter writer = new java.io.PrintWriter(this.file);
+		//write to file
+		for(int i = 0; i < this.arrayList.size(); i++){
+			String m = translateToBinary(this.arrayList.get(i));		
+			arrayList.set(i, m);
+			if(m != ""){
+				//System.out.print(arrayList.get(i));
+				writer.print(m); //makes it one big line of binary bits for getBits method
+			}
+		}//end for-loop	
+		writer.close();	
+	}
+	
+	public String stringOfBits() {
+		String bits ="";
+		//saves copy of binary data to String for use in the getBits() method
+		for(int i = 0; i < arrayList.size(); i++) {
+			bits = bits + arrayList.get(i);
+		}
+		return bits;
+	}
+	
+	public String getBits(String bits, int offset, int n) {
+		String result = "";
+		for(int i = offset; i < (offset + n); i++) {
+			result = result + bits.charAt(i);
+		}
+		return result;
+	}
+	
+	public int binaryToInt(String binary) {
+		char[] numbers = binary.toCharArray();
+		int result = 0;
+		for(int i = numbers.length - 1; i >= 0; i--) {
+			if(numbers[i] == '1') {
+				result += Math.pow(2, (numbers.length - i -1));
+			}
+		}
+		return result;
+	}
+	
